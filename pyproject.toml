@@ -1,0 +1,38 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "codeprov"
+version = "0.0.1a"
+license = {file = "LICENSE"}
+description = "Code provenance and attribution"
+requires-python = ">=3.10"
+authors = [
+    {name = "Arthur Goncharuk", email = "af3.inet@gmail.com"},
+]
+classifiers = [
+    "Programming Language :: Python",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Text Processing :: Linguistic",
+    "Typing :: Typed",
+]
+dependencies = [
+    "tree-sitter>=0.24.0",
+    "tree-sitter-python>=0.23.6",
+    "tree-sitter-javascript>=0.23.1",
+    "rbloom>=1.0.0",
+    "marisa-trie>=1.2.1",
+    "tree-sitter-java>=0.23.5",
+    "tree-sitter-yaml>=0.7.0",
+]
+
+[project.urls]
+"Source Code" = "https://github.com/Trussed-ai/codeprov"
+
+[tool.ruff.lint]
+ignore = ["F403", "F405", "F722", "E402"]
+
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "space"
