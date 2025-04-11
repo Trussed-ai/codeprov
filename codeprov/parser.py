@@ -4,7 +4,7 @@ from collections.abc import Buffer
 from typing import ClassVar, Self
 
 from tree_sitter import Language, Parser, Tree, Node
-from codeprov.artifact import Metadata
+from codeprov.artifact import Manifest
 
 
 @dataclass(slots=True, eq=False, init=False)
@@ -40,7 +40,7 @@ class LanguageParser:
     def __init_subclass__(cls):
         if cls.language or cls.name:
             cls.classes[cls.language, cls.name] = cls
-    
+
     def __repr__(self):
         return f'<{type(self).__name__} language={self.language} name={self.name}>'
 
@@ -50,10 +50,14 @@ class LanguageParser:
             return cls.classes[language, name]
         except KeyError:
             raise ValueError(f'Parser "{name}" for {language} not found') from None
-    
+
     @classmethod
     def get_dataset_name(cls, dataset='stackv2_md'):
         return f'{cls.language}_{cls.name}_{dataset}'.lower()
+
+    @classmethod
+    def get_manifest(cls):
+        return Manifest(language=cls.language, parser=cls.name)
 
     def grammar(self) -> object:
         raise NotImplementedError
@@ -83,7 +87,7 @@ class LanguageParser:
             i.digest.update(b''.join(i.tokens))
 
         return self
-    
+
     def digests(self):
         return {i.digest.digest(): i for i in self.blocks}
 
