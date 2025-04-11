@@ -168,7 +168,7 @@ class PythonParser(LanguageParser):
 
 
 class JavaScriptParser(LanguageParser):
-    language: ClassVar[str] = 'JavaSript'
+    language: ClassVar[str] = 'JavaScript'
     name: ClassVar[str] = 'block1'
 
     search_nodes: ClassVar[frozenset[str] | None] = None
