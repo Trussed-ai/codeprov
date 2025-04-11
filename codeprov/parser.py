@@ -1,16 +1,10 @@
 from hashlib import blake2s
 from dataclasses import dataclass
 from collections.abc import Buffer
-from typing import Callable, Iterable, ClassVar, Self
-
+from typing import ClassVar, Self
 
 from tree_sitter import Language, Parser, Tree, Node
-from marisa_trie import Trie, BinaryTrie
-from rbloom import Bloom
-
-
-def bloom_hash(digest: bytes):
-    return int.from_bytes(digest[:16], 'big', signed=True)
+from codeprov.artifact import Metadata
 
 
 @dataclass(slots=True, eq=False, init=False)
@@ -46,6 +40,9 @@ class LanguageParser:
     def __init_subclass__(cls):
         if cls.language or cls.name:
             cls.classes[cls.language, cls.name] = cls
+    
+    def __repr__(self):
+        return f'<{type(self).__name__} language={self.language} name={self.name}>'
 
     @classmethod
     def get_class(cls, language: str, name: str):
@@ -53,6 +50,10 @@ class LanguageParser:
             return cls.classes[language, name]
         except KeyError:
             raise ValueError(f'Parser "{name}" for {language} not found') from None
+    
+    @classmethod
+    def get_dataset_name(cls, dataset='stackv2_md'):
+        return f'{cls.language}_{cls.name}_{dataset}'.lower()
 
     def grammar(self) -> object:
         raise NotImplementedError
@@ -80,6 +81,11 @@ class LanguageParser:
 
         for i in self.blocks:
             i.digest.update(b''.join(i.tokens))
+
+        return self
+    
+    def digests(self):
+        return {i.digest.digest(): i for i in self.blocks}
 
     def lookup(self, node: Node):
         for i in node.children:
@@ -213,41 +219,3 @@ class JavaParser(LanguageParser):
         from tree_sitter_java import language
 
         return language()
-
-
-@dataclass(slots=True)
-class Source:
-    id: int
-    repo: str
-    revision: str
-    path: str
-    stars: int
-    licenses: list[str]
-
-
-class SourcesTrie:
-    def __init__(self, *args, **kwargs):
-        self.trie = Trie(*args, **kwargs)
-
-    def load(self, path: str):
-        self.trie = self.trie.load(path)
-        return self
-
-    def get_source(self, repo: str, revision: str, path: str):
-        key = repo + '\1' + revision + '\1' + path + '\1'
-        source, source_id = next(self.trie.iteritems(key), (None, None))
-
-        if source is not None:
-            repo, revision, path, stars, *licenses = source.split('\1')
-            return Source(source_id, repo, revision, path, int(stars), licenses)
-
-    def get_source_by_id(self, source_id: int):
-        try:
-            source = self.trie.restore_key(source_id)
-        except KeyError:
-            return None
-
-        repo, revision, path, stars, *licenses = source.split('\1')
-        return Source(source_id, repo, revision, path, int(stars), licenses)
-
-
