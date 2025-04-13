@@ -25,6 +25,7 @@ dependencies = [
     "marisa-trie>=1.2.1",
     "tree-sitter-java>=0.23.5",
     "tree-sitter-yaml>=0.7.0",
+    "requests",
 ]
 
 [project.urls]
