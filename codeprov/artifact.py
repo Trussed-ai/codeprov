@@ -2,6 +2,7 @@ import os
 import json
 
 from typing import TypedDict
+from dataclasses import dataclass, asdict
 
 
 CODEPROV_HOME = os.path.expanduser(
@@ -12,15 +13,25 @@ CODEPROV_HOME = os.path.expanduser(
 )
 
 
-class Manifest(TypedDict):
+@dataclass
+class Manifest:
     language: str
     parser: str
+    sample: str
+
+    @property
+    def name(self):
+        return f'{self.language}_{self.parser}_{self.sample}'.lower()
 
 
 class Metadata:
     def __init__(self, name: str):
         self.name = name
-        self.path = os.path.join(CODEPROV_HOME, self.name)
+
+        if os.path.exists(os.path.abspath(name)):
+            self.path = os.path.abspath(name)
+        else:
+            self.path = os.path.join(CODEPROV_HOME, self.name)
 
         self.manifest_path = os.path.join(self.path, 'manifest.json')
         self.digests_db_path = os.path.join(self.path, 'digests')
@@ -32,8 +43,8 @@ class Metadata:
         return f'<{type(self).__name__}: {self.path}>'
 
     def load_manifest(self) -> Manifest:
-        return json.load(open(self.manifest_path))
+        return Manifest(**json.load(open(self.manifest_path)))
     
     def save_manifest(self, manifest: Manifest):
-        json.dump(manifest, open(self.manifest_path, 'w'), indent=4)
+        json.dump(asdict(manifest), open(self.manifest_path, 'w'), indent=4)
 

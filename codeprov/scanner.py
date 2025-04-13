@@ -99,7 +99,7 @@ class Scanner:
         metadata = Metadata(name)
         manifest = metadata.load_manifest()
 
-        parser = LanguageParser.get_class(manifest['language'], manifest['parser'])(
+        parser = LanguageParser.get_class(manifest.language, manifest.parser)(
             parser_timeout_micros
         )
         sources = SourcesTrie().load(metadata.sources_trie_path, sources_mmap)

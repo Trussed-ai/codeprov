@@ -52,12 +52,8 @@ class LanguageParser:
             raise ValueError(f'Parser "{name}" for {language} not found') from None
 
     @classmethod
-    def get_dataset_name(cls, dataset='stackv2_md'):
-        return f'{cls.language}_{cls.name}_{dataset}'.lower()
-
-    @classmethod
-    def get_manifest(cls):
-        return Manifest(language=cls.language, parser=cls.name)
+    def get_manifest(cls, sample: str='stackv2_md'):
+        return Manifest(language=cls.language, parser=cls.name, sample=sample)
 
     def grammar(self) -> object:
         raise NotImplementedError
