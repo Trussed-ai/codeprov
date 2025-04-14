@@ -52,7 +52,7 @@ class LanguageParser:
             raise ValueError(f'Parser "{name}" for {language} not found') from None
 
     @classmethod
-    def get_manifest(cls, sample: str='stackv2_md'):
+    def get_manifest(cls, sample: str = 'stackv2_md'):
         return Manifest(language=cls.language, parser=cls.name, sample=sample)
 
     def grammar(self) -> object:

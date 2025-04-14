@@ -6,7 +6,7 @@ from collections.abc import Buffer
 from rbloom import Bloom
 from marisa_trie import Trie, BinaryTrie
 
-from codeprov.artifact import Metadata
+from codeprov.artifact import Metadata, OfflineModeIsEnabled
 from codeprov.parser import LanguageParser, Block
 
 
@@ -95,16 +95,26 @@ class Scanner:
         parser_timeout_micros=1000000,
         sources_mmap=True,
         digests_mmap=True,
+        offline=False,
     ):
         metadata = Metadata(name)
+
+        if not metadata.files_exists():
+            if offline:
+                raise OfflineModeIsEnabled(
+                    f'Cannot download {name} dataset: offline mode is enabled.'
+                )
+
+            metadata.download_artifact(after=metadata.extract_artifact)
+
         manifest = metadata.load_manifest()
+        sources = SourcesTrie().load(metadata.sources_trie_path, sources_mmap)
+        digests = DigestsTrie().load(metadata.digests_trie_path, digests_mmap)
+        digests_bloom = Bloom.load(metadata.digests_bloom_path, bloom_hash)
 
         parser = LanguageParser.get_class(manifest.language, manifest.parser)(
             parser_timeout_micros
         )
-        sources = SourcesTrie().load(metadata.sources_trie_path, sources_mmap)
-        digests = DigestsTrie().load(metadata.digests_trie_path, digests_mmap)
-        digests_bloom = Bloom.load(metadata.digests_bloom_path, bloom_hash)
 
         return cls(
             parser=parser,
