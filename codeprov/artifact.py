@@ -9,8 +9,7 @@ import requests
 from typing import Callable, BinaryIO
 from dataclasses import dataclass, asdict
 
-from tqdm import tqdm
-from tqdm.contrib.logging import logging_redirect_tqdm
+from tqdm.auto import tqdm
 
 
 CODEPROV_HOME = os.path.expanduser(
@@ -86,16 +85,15 @@ class Metadata:
                 f'Cannot reach {url}: offline mode is enabled. To disable it, please unset the `CODEPROV_OFFLINE` environment variable.'
             )
 
-        with logging_redirect_tqdm():
-            with tempfile.NamedTemporaryFile() as f:
-                with tqdm(unit='B', unit_scale=True, desc=name) as bar:
-                    for response in maybe_multifile(url):
-                        for chunk in response.iter_content(32768):
-                            bar.update(len(chunk))
-                            f.write(chunk)
+        with tempfile.NamedTemporaryFile() as f:
+            with tqdm(unit='B', unit_scale=True, desc=name, disable=None) as bar:
+                for response in maybe_multifile(url):
+                    for chunk in response.iter_content(32768):
+                        bar.update(len(chunk))
+                        f.write(chunk)
 
-                f.seek(0)
-                (after or self.extract_artifact)(f)
+            f.seek(0)
+            (after or self.extract_artifact)(f)
 
     def extract_artifact(self, fileobj: BinaryIO):
         logger.info('Extract to %s', self.path)
