@@ -96,6 +96,7 @@ class Scanner:
         sources_mmap=True,
         digests_mmap=True,
         offline=False,
+        url: str | None = None,
     ):
         metadata = Metadata(name)
 
@@ -105,7 +106,7 @@ class Scanner:
                     f'Cannot download {name} dataset: offline mode is enabled.'
                 )
 
-            metadata.download_artifact(after=metadata.extract_artifact)
+            metadata.download_artifact(url=url, after=metadata.extract_artifact)
 
         manifest = metadata.load_manifest()
         sources = SourcesTrie().load(metadata.sources_trie_path, sources_mmap)
@@ -115,6 +116,7 @@ class Scanner:
         parser = LanguageParser.get_class(manifest.language, manifest.parser)(
             parser_timeout_micros
         )
+        parser.search_nodes = None # All
 
         return cls(
             parser=parser,

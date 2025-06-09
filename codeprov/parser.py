@@ -24,10 +24,10 @@ class LanguageParser:
     language: ClassVar[str] = 'Base'
     name: ClassVar[str] = 'block1'
 
-    digest_nodes: ClassVar[frozenset[str]] = frozenset({'block'})
-    digest_skip_nodes: ClassVar[frozenset[str]] = frozenset({'comment'})
-    digest_min_nodes: ClassVar[int] = 30
-    search_nodes: ClassVar[frozenset[str] | None] = None
+    digest_nodes: frozenset[str] = frozenset({'block'})
+    digest_skip_nodes: frozenset[str] = frozenset({'comment'})
+    digest_min_nodes: int = 30
+    search_nodes: frozenset[str] | None = None
 
     tree: Tree | None
     blocks: dict[Block, Block | None]
@@ -137,19 +137,19 @@ class PythonParser(LanguageParser):
     language: ClassVar[str] = 'Python'
     name: ClassVar[str] = 'block1'
 
-    search_nodes: ClassVar[frozenset[str]] = frozenset(
+    search_nodes: frozenset[str] = frozenset(
         {
             'decorated_definition',
             'class_definition',
             'function_definition',
         }
     )
-    digest_nodes: ClassVar[frozenset[str]] = frozenset(
+    digest_nodes: frozenset[str] = frozenset(
         {
             'block',
         }
     )
-    digest_skip_nodes: ClassVar[frozenset[str]] = frozenset(
+    digest_skip_nodes: frozenset[str] = frozenset(
         {
             'comment',
             'decorator',
@@ -167,13 +167,13 @@ class JavaScriptParser(LanguageParser):
     language: ClassVar[str] = 'JavaScript'
     name: ClassVar[str] = 'block1'
 
-    search_nodes: ClassVar[frozenset[str] | None] = None
-    digest_nodes: ClassVar[frozenset[str]] = frozenset(
+    search_nodes: frozenset[str] | None = None
+    digest_nodes: frozenset[str] = frozenset(
         {
             'statement_block',
         }
     )
-    digest_skip_nodes: ClassVar[frozenset[str]] = frozenset(
+    digest_skip_nodes: frozenset[str] = frozenset(
         {
             'comment',
             '{',
@@ -192,20 +192,20 @@ class JavaParser(LanguageParser):
     language: ClassVar[str] = 'Java'
     name: ClassVar[str] = 'block1'
 
-    search_nodes: ClassVar[frozenset[str]] = frozenset(
+    search_nodes: frozenset[str] = frozenset(
         {
             'class_declaration',
             'class_body',
             'method_declaration',
         }
     )
-    digest_nodes: ClassVar[frozenset[str]] = frozenset(
+    digest_nodes: frozenset[str] = frozenset(
         {
             'block',
             'lambda_expression',
         }
     )
-    digest_skip_nodes: ClassVar[frozenset[str]] = frozenset(
+    digest_skip_nodes: frozenset[str] = frozenset(
         {
             'line_comment',
             'block_comment',
