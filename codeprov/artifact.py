@@ -76,9 +76,13 @@ class Metadata:
         url: str | None = None,
         after: Callable[[BinaryIO], None] | None = None,
     ):
-        global response
         name = os.path.basename(self.name)
-        url = (url or URL).format(name=name)
+        url = (url or URL)
+
+        if '{name}' in url:
+            url = url.format(name=name)
+        else:
+            url = f'{url.rstrip("/")}/{name}'
 
         if CODEPROV_OFFLINE:
             raise OfflineModeIsEnabled(
