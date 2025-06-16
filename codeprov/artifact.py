@@ -82,7 +82,7 @@ class Metadata:
         if '{name}' in url:
             url = url.format(name=name)
         else:
-            url = f'{url.rstrip("/")}/{name}'
+            url = f'{url.rstrip("/")}/{name}.tar.lzma'
 
         if CODEPROV_OFFLINE:
             raise OfflineModeIsEnabled(
